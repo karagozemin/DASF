@@ -1,14 +1,19 @@
 // src/components/WalletButton.tsx
 import React, { useState } from "react";
-import { connectWallet } from "../walletConnection";
+import { Button } from '@mui/material';
+import { ethers } from 'ethers';
+import Web3Modal from 'web3modal';
+// (removed unused import)
 
 const WalletButton: React.FC = () => {
   const [account, setAccount] = useState<string>("");
 
-  const handleConnect = async () => {
+  const connectWallet = async () => {
     try {
-      const provider = await connectWallet();
-      const signer = provider.getSigner();
+      const web3Modal = new Web3Modal();
+      const instance = await web3Modal.connect();
+      const provider = new ethers.BrowserProvider(instance);
+      const signer = await provider.getSigner();
       const address = await signer.getAddress();
       setAccount(address);
     } catch (error) {
@@ -16,10 +21,13 @@ const WalletButton: React.FC = () => {
     }
   };
 
+  // (removed unused handleConnect function)
+
+
   return (
-    <button onClick={handleConnect}>
-      {account ? `Connected: ${account.substring(0,6)}...${account.substring(account.length - 4)}` : "Connect Wallet"}
-    </button>
+    <Button variant="contained" color="secondary" onClick={connectWallet}>
+      {account ? `Connected: ${account.substring(0, 6)}...${account.substring(account.length - 4)}` : "Connect Wallet"}
+    </Button>
   );
 };
 
